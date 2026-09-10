@@ -358,7 +358,26 @@ DAYS.forEach((day,idx)=>{
   panelsWrap.appendChild(panel);
 });
 
-document.getElementById("printBtn").addEventListener("click", ()=>window.print());
+function getInitials(name){
+  return name.trim().split(/\s+/).filter(Boolean)
+    .map(w=>w[0].toUpperCase()).join("");
+}
+
+function sanitizeForFilename(str){
+  return str.trim().replace(/[\\/:*?"<>|]+/g,"-").replace(/\s+/g,"-");
+}
+
+const originalTitle = document.title;
+
+document.getElementById("printBtn").addEventListener("click", ()=>{
+  const name = document.getElementById("empName").value;
+  const week = document.getElementById("weekDate").value;
+  const initials = name ? getInitials(name) : "Employee";
+  const weekPart = week ? sanitizeForFilename(week) : "Week";
+  document.title = `${initials}_${weekPart}`;
+  window.print();
+  setTimeout(()=>{ document.title = originalTitle; }, 500);
+});
 
 document.getElementById("clearBtn").addEventListener("click", ()=>{
   if(!confirm("Clear all entries on this form?")) return;
